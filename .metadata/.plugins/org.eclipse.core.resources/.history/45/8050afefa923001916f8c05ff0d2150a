@@ -1,0 +1,13 @@
+package com.kitri.app1.imgboard;
+
+import java.util.ArrayList;
+
+public interface Dao {
+
+	int insert(ImgBoard ib);
+	ArrayList<ImgBoard> selectAll();
+	ImgBoard selectByNum(int num);
+	int update(ImgBoard ib); //title, content, w_date만 수정
+	int delete(int num);
+	
+}

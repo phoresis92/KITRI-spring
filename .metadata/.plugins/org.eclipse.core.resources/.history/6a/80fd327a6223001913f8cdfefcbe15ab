@@ -1,0 +1,32 @@
+package com.kitri.app1.modelAttribute;
+
+import javax.annotation.Resource;
+
+public class CategoryServiceImpl implements CategoryService {
+
+	@Resource(name="sqlSession")
+	private CategoryDao dao;
+	
+	public void setDao(CategoryDao dao) {
+		this.dao = dao;
+	}
+
+	@Override
+	public String[] getLargeType() {
+		
+		return dao.getLargeType();
+	}
+
+	@Override
+	public String[] getMediumType() {
+		// TODO Auto-generated method stub
+		return dao.getMediumType();
+	}
+
+	@Override
+	public String[] getSmallType() {
+		// TODO Auto-generated method stub
+		return dao.getSmallType();
+	}
+
+}

@@ -1,0 +1,8 @@
+package com.kitri.app1.repository;
+
+public interface Dao {
+
+	public void insert(Repo repo);
+	public void selectAll();
+	
+}

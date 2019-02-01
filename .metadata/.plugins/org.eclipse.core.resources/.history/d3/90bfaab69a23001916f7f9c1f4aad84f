@@ -1,0 +1,21 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<form action="" method="post" enctype="">
+	
+	<label for="studentNumber">학번 : </label>
+	<input type="text" name="studentNumber" > <br>
+	<label for="report">파일 : </label>
+	<input type="file" name="report"> <br>
+	
+	</form>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+package com.kitri.app1.board;
+
+import java.util.ArrayList;
+
+import javax.annotation.Resource;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Component;
+
+import bean.Article;
+
+@Component("boardService")
+public class BServiceImpl implements BService{
+
+	@Resource(name="sqlSession")
+	private SqlSession sqlSession ;
+	private BDao dao;
+	
+	public BServiceImpl(SqlSession sqlSession) {
+		this.sqlSession = sqlSession;
+	}
+	
+	@Override
+	public void addArticle(Article a) {
+		dao = sqlSession.getMapper(BDao.class);
+
+		dao.insert(a);
+	}
+
+	@Override
+	public ArrayList<Article> getAll() {
+		dao = sqlSession.getMapper(BDao.class);
+
+		ArrayList<Article> list = dao.selectAll();
+		
+		for(Article a : list) {
+			/*System.out.print(a.getNum()+" : ");
+			System.out.print(a.getTitle()+" : ");
+			System.out.print(a.getWriter()+" : ");
+			System.out.print(a.getW_date());
+			System.out.println();*/
+			System.out.println(a);
+		}
+		
+		return list;
+	}
+
+	@Override
+	public Article getByNum(int num) {
+		dao = sqlSession.getMapper(BDao.class);
+
+		return dao.selectByNum(num);
+	}
+
+	@Override
+	public ArrayList<Article> getByWriter(String writer) {
+		dao = sqlSession.getMapper(BDao.class);
+
+		return dao.selectByWriter(writer);
+	}
+
+	@Override
+	public ArrayList<Article> getByTitle(String title) {
+		dao = sqlSession.getMapper(BDao.class);
+
+		return dao.selectByTitle("%"+title+"%");
+	}
+
+	@Override
+	public void editArticle(Article a) {
+		dao = sqlSession.getMapper(BDao.class);
+
+		dao.update(a);
+	}
+
+	@Override
+	public void deleteArticle(int num) {
+		dao = sqlSession.getMapper(BDao.class);
+
+		dao.delete(num);
+	}
+
+}

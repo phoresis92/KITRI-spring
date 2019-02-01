@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<bean name="conn" class="conn.DBConnect"></bean>
+
+
+	<bean name="service" class="member.MService">
+		<constructor-arg>
+			<ref bean="sqlSession"/>
+		</constructor-arg>
+	</bean>
+
+	
+	<bean name="Bservice" class="board.BServiceImpl">
+		<constructor-arg>
+			<ref bean="sqlSession" />
+		</constructor-arg>
+	</bean>
+
+	<bean name="Bmenu" class="main.BMenu">
+		<property name="service">
+			<ref bean="Bservice"/>
+		</property>
+	</bean>
+	
+	<bean name="menu" class="main.Menu">
+		<property name="service">
+			<ref bean="service" />
+		</property>
+		<property name="board">
+			<ref bean="Bmenu"/>
+		</property>
+	</bean>
+
+
+<!-- aspectjrt
+aspectjweaver
+aspectjtools
+ -->
+
+	<!-- 적용될 대상 -->
+
+	<bean id="adviceTest" class="myAdvice.AdviceTest"></bean>
+
+	<!-- advice 객체 빈 등록 -->
+
+	<bean id="performanceTraceAdvice" class="myAdvice.ProfilingAdvice"/>
+
+	<!-- aop 관점등록 -->
+
+	<aop:config>
+	
+		<aop:aspect id="traceAspect1" ref="performanceTraceAdvice">
+			<aop:pointcut expression="execution(public * myAdvice.AdviceTest.*(..))" id="publicMethod"/>
+			<aop:around pointcut-ref="publicMethod" method="trace"/>
+		</aop:aspect>
+		
+		<aop:aspect id="traceAspect2" ref="performanceTraceAdvice">
+			<aop:pointcut expression="execution(public * myAdvice.AdviceTest.*(..))" id="returning"/>
+			<aop:after-returning pointcut-ref="returning" method="printStr" returning="ret"/>
+		</aop:aspect>
+		
+	</aop:config>
+
+
+
+
+<!-- 마이바티스 연결 커넥션 풀 -->
+
+<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName">
+			<value>oracle.jdbc.driver.OracleDriver</value>
+		</property>
+		<property name="url">
+			<value>jdbc:oracle:thin:@localhost:1521:XE</value>
+		</property>
+		<property name="username">
+			<value>study</value>
+		</property>
+		<property name="password">
+			<value>study</value>
+		</property>
+	</bean>
+	
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="mybatis" />
+		<property name="mapperLocations" value="classpath:/mappers/*.xml" />
+		
+	</bean>
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+
+
+
+
+</beans>

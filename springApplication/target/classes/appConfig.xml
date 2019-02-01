@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!-- 	<bean name="t" class="test1.Test" ></bean>
+
+	<bean name="t2" class="test1.Test" >
+		<constructor-arg>
+			<value>qweer</value>
+		</constructor-arg>
+	</bean>	
+	
+	<bean name="t3" class="test1.Test" >
+		<constructor-arg>
+			<value type="int">123</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean name="t4" class="test1.Test" >
+		<constructor-arg>
+			<value>qqq</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value type="int">555</value>
+		</constructor-arg>
+	</bean>
+	 -->
+	 
+	 <!-- ============================================================== -->
+	 
+	<bean name="t" class="test1.Test" ></bean>
+	
+	<bean id="t2" class="test1.Test2" >
+		<property name="t1">
+			<ref bean="t" />
+		</property>
+	</bean>
+	
+<!-- 	<bean id="t3" class="test1.Test2" >
+		<property name="t1">
+			<ref bean="t" />
+		</property>
+		<property name="val">
+			<value>12</value>
+		</property>
+		<property name="str">
+			<value>zxcv</value>
+		</property>
+	</bean> -->
+	<!-- 아래 네임스페이스에 p 태그 등록하고 사용 -->
+	<bean id="t3" class="test1.Test2"  p:t1-ref="t" p:val="10" p:str="zxcv"></bean>
+
+	 <!-- ============================================================== -->
+
+
+
+
+	<bean id="conn" class="test2.DBConn" >
+		<constructor-arg>
+			<value>oracle</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean name="dao" class="test2.DaoImplOracle">
+		<property name="conn">
+			<ref bean="conn"/>
+		</property>
+	</bean>
+	
+	<bean name="serviceSchoolB" class="test2.ServiceImplSchoolB">
+		<property name="dao">
+			<ref bean="dao"/>
+		</property>
+	</bean>
+	<bean name="menu" class="test2.Menu">
+		<property name="service">
+			<ref bean="serviceSchoolB"/>
+		</property>
+	</bean>
+
+
+
+
+
+</beans>

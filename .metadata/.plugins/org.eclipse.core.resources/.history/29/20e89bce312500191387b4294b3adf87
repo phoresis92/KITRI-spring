@@ -1,0 +1,44 @@
+package com.kitri.test.product;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+@Controller
+public class ProductController {
+
+	@Resource(name="service")
+	private Service service;
+	
+	@RequestMapping(value="/product/add",  method=RequestMethod.GET)
+	public String addG() {
+		return "/product/add";
+	}
+	
+	@RequestMapping(value="/product/add",  method=RequestMethod.POST)
+	public String addP(Product p, HttpServletRequest req) {
+		
+		HttpSession session = req.getSession();
+		String id = (String) session.getAttribute("id");
+		p.setSeller(id);
+		System.out.println(p);
+		
+/*		String img1 = p.getFile1().getOriginalFilename();
+		p.setImg1(img1);
+		String img2 = p.getFile2().getOriginalFilename();
+		p.setImg1(img2);
+		String img3 = p.getFile3().getOriginalFilename();
+		p.setImg1(img3);
+		String img4 = p.getFile4().getOriginalFilename();
+		p.setImg1(img4);*/
+		
+		service.addProd(p);
+		
+		return "redirect:/";
+	}
+	
+}

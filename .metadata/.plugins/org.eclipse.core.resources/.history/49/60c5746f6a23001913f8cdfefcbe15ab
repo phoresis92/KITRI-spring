@@ -1,0 +1,37 @@
+package com.kitri.app1.modelAttribute;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+@Controller
+public class CategoryController {
+
+	@Resource(name="cateService")
+	private CategoryService cService;
+	
+	public void setcService(CategoryService cService) {
+		this.cService = cService;
+	}
+
+	@ModelAttribute("LargeTypeList")
+	public List<SearchType> referenceSearchTypeList1() {
+		List<SearchType> options = new ArrayList<SearchType>();
+		
+		String[] lList = cService.getLargeType();
+		for(int i = 0 ; i < lList.length; i++) {
+			options.add(new SearchType(i, lList[i]));
+		}
+		return options;
+	}
+	
+	
+	
+	
+	
+	
+}

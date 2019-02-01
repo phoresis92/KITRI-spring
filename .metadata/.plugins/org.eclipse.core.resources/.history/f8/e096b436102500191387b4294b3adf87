@@ -1,0 +1,16 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>구매자</h1>
+	<a href="${ pageContext.request.contextPath }/">메인페이지</a> <br />
+	<a href="${ pageContext.request.contextPath }/1p">1페이지</a> <br />
+	<a href="${ pageContext.request.contextPath }/2p">2페이지</a> <br />
+
+</body>
+</html>

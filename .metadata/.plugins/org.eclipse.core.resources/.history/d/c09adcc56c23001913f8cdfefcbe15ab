@@ -1,0 +1,9 @@
+package com.kitri.app1.modelAttribute;
+
+public interface CategoryDao {
+	
+	public String[] getLargeType();
+	public String[] getMediumType();
+	public String[] getSmallType();
+
+}

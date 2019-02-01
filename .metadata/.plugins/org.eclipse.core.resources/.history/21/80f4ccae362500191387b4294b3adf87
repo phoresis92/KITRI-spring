@@ -1,0 +1,14 @@
+package com.kitri.test.product;
+
+import java.util.ArrayList;
+
+public interface Dao {
+
+	void insert(Product p);
+	ArrayList<Product> selectAll();
+	ArrayList<Product> selectBySeller(String seller);
+	ArrayList<Product> selectByTitle(String title);
+	Product selectByNum(int num);
+	
+	
+}

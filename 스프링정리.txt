@@ -1,0 +1,552 @@
+2장. DI
+
+1)스프링 컨테이너
+
+◆BeanFactory 인터페이스 : 가장 단순한 컨테이너. 빈 생성 및 관리, 의존 관계 설정.
+--샘플코드-------------------------------------------------------------------
+Resource resource = new ClassPathResource("applicationContext.xml");
+BeanFactory beanfactory = new XmlBeanFactory(resource);
+WriteServiceImpl w = (WriteServiceImpl)beanfactory.getBean("myWriteService");
+w.writeDate("hello");
+-----------------------------------------------------------------------------
+
+◆ApplicationContext 인터페이스 : 빈 생성 및 관리, 의존 관계 설정, 빈 객체 라이프 사이클, 메시지 지원, 국제화 지원, 이벤트 지원 등.
+--샘플코드-------------------------------------------------------------------
+String[] config = new String[]{"applicationContext.xml"};
+ApplicationContext context = new ClassPathXmlApplicationContext(config);	
+WriteServiceImpl w = (WriteServiceImpl)context.getBean("myWriteService");
+w.writeDate("hello");
+-----------------------------------------------------------------------------
+
+2)빈 생성과 의존성
+빈 객체는 컨테이너가 생성하므로 컨테이너에게 설정을 알려줘야한다. 그러므로 생성해야하는 빈에 대한 정보를 설정파일(xml)에 등록해야 한다. 의존성도 함께 정의해야 한다.
+
+생성자를 이용한
+세터를 이용한 의존성 주입
+
+<설정파일(XML)>
+--샘플코드-------------------------------------------------------------------
+<bean name="phoneDao" class="model.PhoneDaoImpl"></bean>
+<bean name="insertService" class="service.InsertAddrImpl">
+	<constructor-arg> //생성자의 아규먼트 전달
+		<value>10</value> //인트타입
+		<value>asdf</value> //문자타입
+		<ref bean="phoneDao" /> //객체타입
+	</constructor-arg>
+</bean>
+-----------------------------------------------------------------------------
+
+bean의 이름을 지정할 때 <bean>의 id나 name 속성을 사용할 수 있다.
+id : xml 내에서 동일한 id 값을 갖는 <bean>이 있으면 예외 발생. 값으로 ('/') (',') 와 같은 특수 문자를 사용할 수 없다.
+name : ('/') (' ') (',') 와 같은 특수 문자를 값으로 사용할 수 있다.
+
+<main에서 객체 사용>
+--샘플코드-------------------------------------------------------------------
+InsertAddrImpl i = (InsertAddrImpl)beanfactory.getBean("insertService");
+-----------------------------------------------------------------------------
+
+3)의존 관계 설정
+◆생성자 방식
+-------------------------------------------------------
+public class InsertAddrImpl implements InsertAddr {
+	private PhoneDao dao;
+	
+	public InsertAddrImpl(PhoneDao dao) {
+		this.dao = dao;
+	}
+}
+-------------------------------------------------------
+
+설정방법
+----------------------------------------------------------------------------
+<bean name="phoneDao" class="model.PhoneDaoImpl"></bean>
+<bean name="insertService" class="service.InsertAddrImpl">
+	<constructor-arg>
+		<ref bean="phoneDao" />
+	</constructor-arg>
+</bean>
+-----------------------------------------------------------------------------
+
+동일한 자바 코드(main)
+---------------------------------------------------------
+PhoneDaoImpl dao = new PhoneDaoImpl();
+InsertAddrImpl i = new InsertAddrImpl(dao);
+---------------------------------------------------------
+
+다양한 종류의 생성자 파라메터 설정 방법
+----------------------------------------------------------------------------
+<bean name="phoneDao" class="model.PhoneDaoImpl"></bean>
+<bean name="insertService" class="service.InsertAddrImpl">
+	<constructor-arg ref ="phoneDao" />
+</bean>
+-----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+<bean name="test1" class="service.Test1">
+	<constructor-arg>
+		<value>10<value/>
+	</constructor-arg>
+</bean>
+<bean name="test2" class="service.Test2">
+	<constructor-arg value="10" />
+</bean>
+<bean name="test3" class="service.Test3">
+	<constructor-arg>
+		<value>테스트<value/>
+	</constructor-arg>
+	<constructor-arg>
+		<value>10<value/>
+	</constructor-arg>
+</bean>
+<bean name="test4" class="service.Test4">
+	<constructor-arg>
+		<value>테스트<value/>
+	</constructor-arg>
+	<constructor-arg>
+		<value type="long">10<value/>
+	</constructor-arg>
+</bean>
+-----------------------------------------------------------------------------
+
+◆프로퍼티 설정방식-setXXXX()이용
+-------------------------------------------------------
+public class InsertAddrImpl implements InsertAddr {
+	private PhoneDao dao;
+	
+	public void setDao(PhoneDao dao) {
+		this.dao = dao;
+	}
+}
+-------------------------------------------------------
+
+설정방법
+----------------------------------------------------------------------------
+<bean name="phoneDao" class="model.PhoneDaoImpl"></bean>
+<bean name="insertService" class="service.InsertAddrImpl">
+	<property name="dao">
+		<ref bean="phoneDao" />
+	</property>
+</bean>
+-----------------------------------------------------------------------------
+
+다양한 종류의 파라메터 설정 방법
+----------------------------------------------------------------------------
+<bean name="test1" class="service.Test1">
+	<property name="str">
+		<value>전달문자열<value/>
+	</property>
+</bean>
+<bean name="test2" class="service.Test2">
+	<property name="str">
+		<value type="int">20<value/>
+	</property>
+</bean>
+<bean name="test3" class="service.Test3">
+	<property name="str" value="aaa"/>
+	<property name="str2" ref="test2"/>	
+</bean>
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p"
+	...>
+
+	<bean name="test3" class="service.Test3" p:str="aaa" p:str2-ref="test2" />
+
+</beans>
+-----------------------------------------------------------------------------
+
+◆List 타입과 배열
+----------------------------------------
+public class Test{
+	private List<Person> data;
+	public void setData(List<Person> data){
+		this.data = data;
+	}
+	...
+}
+
+----------------------------------------------------------------------------
+<bean name="test" class="service.Test">
+	<property name="data">
+		<list>
+			<ref bean="test2/>
+			<ref bean="test3/>
+		</list>
+	</property>
+</bean>
+
+<bean name="test2" class="service.Person"/>
+<bean name="test3" class="service.Person"/>
+
+-----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+<bean name="test" class="service.Test">
+	<property name="data">
+		<list>
+			<value type="java.lang.Double">0.2<value/>
+			<value type="java.lang.Double">0.3<value/>
+		</list>
+	</property>
+</bean>
+
+-----------------------------------------------------------------------------
+
+◆Map 타입
+------------------------------------------------------------
+public class MapTest{
+	private Map<String, Test> mapData;
+	public void setMapData(Map<String, Test> mapData){
+		this.mapData = mapData;
+	}
+	...
+}
+------------------------------------------------------------
+----------------------------------------------------------------------------
+<bean name="test4" class="service.MapTest">
+	<property name="mapData">
+		<map>
+			<entry>
+				<key><value>1</value></key>
+				<ref bean="test/>
+			</entry>
+			<entry>
+				<key><value>2</value></key>
+				<ref bean="test2/>
+			</entry>
+		</map>
+	</property>
+</bean>
+
+<bean name="test" class="service.Test"/>
+<bean name="test2" class="service.Test"/>
+
+-----------------------------------------------------------------------------
+
+◆Properties 타입
+-----------------------------------------------------------
+public class DBService{
+	private Properties config;
+	public void setConfig(Properties config){
+		this.config = config;
+	}
+	public void connect(){
+		String serverIp = config.getProperty("server");
+		...
+	}
+}
+-----------------------------------------------------------
+----------------------------------------------------------------------------
+<bean name="test" class="service.DBService">
+	<property name="config">
+		<props>
+			<prop key="server">192.168.0.14</prop>
+			<prop key="connectionTimeout">5000</prop>
+		</props>
+	</property>
+</bean>
+
+-----------------------------------------------------------------------------
+
+실습과제
+회원가입/수정/삭제/출력
+회원정보 - 아이디/패스워드/이름
+
+1. dto(Member - id, pwd, name) 생성
+2. dao interface 작성
+3. dao interface 상속받는 구현 클래스 생성
+4. service interface 작성
+5. service interface 상속받는 구현 클래스 생성
+6. 설정파일에 빈 등록
+7. main작성
+
+
+create table member2(
+id varchar2(20),
+pwd varchar2(20),
+name varchar2(20)
+);
+
+-------------------------------------------------------------------------------
+
+3)의존관계 자동설정
+
+◆byName - 프로퍼티의 이름과 같은 이름을 갖는 빈 객체를 설정
+◆byType - 프로퍼티의 이름과 같은 타입을 갖는 빈 객체를 설정
+◆constructor - 생성자 파라미터 타입과 같은 타입을 갖는 빈 객체를 생성자에 전달.
+◆autodetect - constructor 방식을 먼저 적용하고, byType 방식을 적용
+
+----샘플코드---------------------------------------------------------
+class DBService{
+	private MyDao dao;
+	public void setDao(MyDaoImpl dao){
+		this.dao = dao;
+	}
+}
+
+
+<bean name="test" class="service.DBService" autowire="byName" />
+<bean name="dao" class="service.MyDaoImpl"/>
+-------------------------------------------------------------------
+
+전체 빈에 자동설정
+-------------------------------------------------------------------
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p"
+	default-autowire="byName"
+	...>
+
+	<bean name="test3" class="service.Test3"/>
+
+</beans>
+-------------------------------------------------------------------
+
+4)부모 빈을 통한 설정 재사용
+
+-------------------------------------------------------------------
+<bean name="test" class="service.DBService">
+	<property name="xx" value="10" />
+	<property name="yy" ref="dao" />
+</bean>
+<bean name="test2" class="service.DBService">
+	<property name="xx" value="10" />
+	<property name="yy" ref="dao" />
+</bean>
+<bean name="dao" class="service.MyDaoImpl"/>
+-------------------------------------------------------------------
+<bean name="abs" class="service.DBService" abstract="true">
+	<property name="xx" value="10" />
+	<property name="yy" ref="dao" />
+</bean>
+
+<bean name="test1" parent="abs"/>
+<bean name="test2" parent="abs"/>
+<bean name="test3" parent="abs">
+	<property name="zz" value="20" />
+</bean>
+<bean name="dao" class="service.MyDaoImpl"/>
+-------------------------------------------------------------------
+
+5)빈 객체 범위
+<bean name="dao" class="service.MyDaoImpl" scope="prototype"/>
+
+◆singleton - 스프링 컨테이너에 한 개의 빈 객체만 존재(기본값)
+◆prototype - 빈을 사용할 때 마다 객체를 생성
+◆request - http 요청 마다 빈 객체 생성(웹에서만 사용)
+◆session - http 세션 마다 빈 객체 생성(웹에서만 사용)
+
+=====================================================================================================
+
+3장. AOP // Aspect-Oriented Programming // 관점 지향 프로그래밍
+
+Spring의 핵심 개념중 하나인 DI가 애플리케이션 모듈들 간의 결합도를 낮춰준다면, 
+AOP는 애플리케이션 전체에 걸쳐 사용되는 기능을 재사용하도록 지원하는 것입니다. 
+
+1)AOP 용어
+◆ advice - 공통 기능(코드)
+◆ joinpoint - advice를 적용 가능한 지점
+◆ pointcut - joinpoint 부분집합. 실제적으로 advice를 적용하는 joinpoint
+◆ weaving - advice가 실행되는 시점
+◆ aspect - 공통 코드를 적용하기 위해서 위의 전체를 묶어 만든 한 단위 
+
+2)advice의 종류
+◆ before advice - 대상 메서드가 호출 되기 전에 공통기능(advice) 실행
+	설정태그 : <aop:before>
+	before advice 메서드는 파라메터로 JoinPoint 사용가능. 꼭 첫번째 파라메터이어야 함.
+	advice 실행 중 예외 발생하면 대상 메서드는 호출되지 않음.
+◆ after returning advice - 대상 메서드가 예외 없이 실행된 이후에 공통기능(advice) 실행
+	설정태그 : <aop:after-returning >
+	after returning 메서드는 파라메터로 JoinPoint 사용가능.
+	대상 메서드의 리턴값을 파라메터로 받을 수 있다. 꼭 첫번째 파라메터이어야 함.
+	advice에서 대상 메서드의 결과값(return 값)을 받아올 수 있다.
+	<aop:after-returning pointcut-ref="publicMethod" method="trace" returning="ret"/>
+	class MyAdvice{
+		public void trace(Object ret){
+			int cnt = (Integer)ret;
+			...
+		}
+	}
+	또는
+	class MyAdvice{
+		public void trace(Article ret){
+			...
+		}
+	}
+
+◆ after throwing advice - 대상 메서드 실행 도중 예외가 발생한 경우 공통기능(advice) 실행
+	설정태그 : <aop:after-throwing>
+	대상 메서드에서 발생한 예외 객체를 받아올 수 있다.
+	<aop:after-throwing pointcut-ref="publicMethod" method="trace" throwing="ex"/>
+	class MyAdvice{
+		public void trace(Throwable ex){
+			...
+		}
+	}
+◆ after advice - 예외 발생 여부와 상관없이 대상 메서드 실행 후 공통기능(advice) 실행
+	설정태그 : <aop:after>
+	after advice 메서드는 파라메터로 JoinPoint 사용가능. 꼭 첫번째 파라메터이어야 함.
+◆ around advice - 대상 메서드 실행 전, 후 또는 예외 발생 시점에 공통기능(advice) 실행
+	설정태그 : <aop:around>
+	대상 메서드는 파라메터로 ProceedingJoinPoint 사용가능. 꼭 첫번째 파라메터이어야 함
+
+3)JoinPoint 
+대상 객체, 대상 메서드와 파라메터를 활용할 수 있다.
+
+제공 메서드
+◆Signature getSignature() - 호출되는 메서드에 대한 정보를 구한다.
+	- String getName() - 메서드 이름
+	- String toLongString() - 메서드를 완전하게 표현한 문장
+	- String toShortString() - 메서드를 축약해서 표현한 문장
+◆Object getTarget() - 대상 객체를 구한다.
+◆Object getArgs() - 파라메터 목록을 구한다.
+
+====================================================================================================
+
+4장. 스프링 MVC 
+
+1)주요 구성요소
+◆DispatcherServlet - 클라이언트의 요청을 받는다. 요청을 처리하는 중심자 역할 수행
+◆HandlerMapping - 클라이언트의 요청 URL을 맵핑
+◆Controller - 클라이언트의 요청을 실제적으로 처리하는 클래스.
+◆ModelAndView - 비즈니스 로직에서 처리한 결과 데이터. 뷰로 전달
+◆ViewResolver - 결과 페이지 생성
+◆View - 결과 페이지
+
+처리흐름
+A. DispatcherServlet가 클라이언트의 요청을 받는다.
+B. 요청 URL을 Controller에서 검색 - HandlerMapping
+C. DispatcherServlet가 Controller에 처리를 요청
+D. 요청을 처리한 결과인 ModelAndView 리턴
+E. DispatcherServlet가 결과 페이지를 ViewResolver에 생성 요청
+F. 결과 페이지 출력
+
+2)하나의 프로젝트에 여러개의 dispatcher-servlet파일을 두거나, 이름을 다르게 할 경우 셋팅 법
+-------------------------------------------------------------------------------------------
+<servlet>
+	<servlet-name>dispatcher</servlet-name>
+	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	<init-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/main.xml
+			/WEB-INF/main2.xml
+		</param-value>
+	</init-param>
+</servlet>
+-------------------------------------------------------------------------------------------
+
+3)controller
+일반 자바파일이다. 단, 클래스를 @Controller으로 지정해야 함.
+클라이언트의 요청 종류에 따라 실행해야하는 메서드를 등록한다.
+
+---요청 url 등록 예-------------------------------------------------------------------
+@RequestMapping(value = "/form.do")
+public String form(Member m) {	     //커맨드 객체 ---->  view : ${member.id}
+	String id = m.getId();
+	return "hello";
+}
+---------------------------------------------------------------------------------------
+@RequestMapping(value = "/form.do")
+public String form(@ModelAttribute("xxx") Member m) {		----> view : ${xxx.id}
+	String id = m.getId();
+	return "hello";
+}
+---------------------------------------------------------------------------------------
+
+4)controller 메서드의 파라미터 타입
+◆@RequestParam
+@RequestMapping(value="/order/insert.do")
+public String insert(@RequestParam(value="id", required=false)String id, 
+		@RequestParam(value="num", required=true, defaultValue="1")int num){
+	String str=id+num;
+	return path+"result";
+}
+
+◆@CookieValue
+@RequestMapping(value="/order/insert.do")
+public String insert(@CookieValue(value="auth", required=true, defaultValue="1")String auth){
+	return path+"result";
+}
+
+◆@RequestHeader
+@RequestMapping(value="/order/insert.do")
+public String insert(@RequestHeader("Accept-Language")String ac){
+	return path+"result";
+}
+
+◆HttpServletRequest, HttpServletResponse, HttpSession
+@RequestMapping(value="/order/insert.do")
+public String insert(HttpSession session){
+	if(session != null){
+		...
+	}
+	return path+"result";
+}
+
+◆커맨드 객체
+
+◆Map, Model, ModelMap
+자동으로 view로 전달
+
+5)controller 메서드의 리턴 타입
+
+◆ModelAndView
+@RequestMapping(value="/event/list.do")
+public ModelAndView list(){
+	ModelAndView mav = new ModelAndView(path+"list"); //mav.setViewName(path+"list");
+	mav.addObject("data", service.select());
+	return mav;
+}
+
+◆String
+결과 페이지 경로 반환
+
+◆Map, Model
+@RequestMapping(value="/event/list.do")
+public Map list(){
+	HashMap<String, Object> model = new HashMap<String, Object>();
+	return model;
+}
+이때 결과페이지는 event/list로 결정된다.
+
+◆void
+위와 같이 RequestMapping과 동일한 경로로 결과페이지가 결정되다.
+
+◆리다이렉트 
+@RequestMapping(value="/event/list.do")
+public ModelAndView list(){
+	ModelAndView mav = new ModelAndView(); 
+	mav.setViewName("redirect:/list.do");
+	mav.addObject("data", service.select());
+	return mav;
+}
+
+6)모델 생성하기
+- 뷰에 전달되는 모델 데이터 - 커맨드 객체
+			    - @ModelAtrribute가 적용된 메서드가 리턴한 객체
+			    - 메서드의 Map, Model, ModelMap 파라미터
+
+
+7)파일 업로드
+a)MultipartResolver를 dispatcher-servlet.xml에 등록
+b)업로드 : @RequestParam 
+	   MultipartHttpServletRequest
+	   커맨드 객체 이용
+
+c)MultipartFile
+  - 업로드된 파일의 정보 및 파일 데이터를 표현하기 위해 제공되는 인터페이스
+
+  - String getName() : 파라메터 이름 반환
+  - String getOriginalFilename() : 업로드 된 파일 이름 반환
+  - boolean isEmpty() : 업로드 된 파일이 존재하지 않는 경우 true 반환
+  - long getSize() : 업로드 된 파일 크기 반환
+  - void transferTo(File dest) throws IOException : 업로드 된 파일 데이터를 지정한 파일에 저장
+
+
+
+
+
+
+
+
+
+

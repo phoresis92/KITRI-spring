@@ -1,0 +1,61 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+
+function back(){
+	history.back();
+}
+
+function del(){
+	
+	location.href="./delete?bnum=${ requestScope.Article.num}"
+	
+}
+
+function modi(){
+	
+	
+	
+	$('#modi').submit();
+}
+
+</script>
+
+</head>
+<body>
+
+<button onclick="back()">back</button> 
+
+<c:if test="${ sessionScope.id == requestScope.Article.writer }">
+
+<button onclick="modi()">modify</button>
+<button onclick="del()">delete</button>
+
+</c:if>
+
+<br>
+	${Article.num } <br>
+	${Article.title }<br>
+	${Article.writer }<br>
+	${Article.content }<br>
+	${Article.w_date }<br>
+
+<form id="modi" action="./board/modify" method="POST">
+
+<input type="hidden" value="${Article.num }" >
+<input type="hidden" value="${Article.title }" >
+<input type="hidden" value="${Article.writer }" >
+<input type="hidden" value="${Article.content }" >
+<input type="hidden" value="${Article.w_date }" >
+
+</form>
+
+</body>
+</html>

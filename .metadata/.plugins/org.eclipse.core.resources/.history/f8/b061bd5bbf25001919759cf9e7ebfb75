@@ -1,0 +1,20 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<td>${ i.num }</td>
+<td>${ i.title }</td>
+<td>${ i.seller }</td>
+<td>${ i.cate }</td>
+<td>${ i.quantity }</td>
+<td>${ i.content }</td>
+<td>${ i.price }</td>
+	
+</body>
+</html>

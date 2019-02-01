@@ -1,0 +1,12 @@
+package com.kitri.app1.modelAttribute;
+
+public class CategoryType {
+
+	private int num;
+	private String name;
+	private String parent;
+	
+	
+	
+	
+}

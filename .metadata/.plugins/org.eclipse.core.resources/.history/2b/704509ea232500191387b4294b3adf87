@@ -1,0 +1,11 @@
+package com.kitri.test.product;
+
+import java.util.ArrayList;
+
+public interface Service {
+
+	public void addProd(Product p);
+	public ArrayList<Product> getAll();
+	public ArrayList<Product> getByMem(String id);
+	
+}

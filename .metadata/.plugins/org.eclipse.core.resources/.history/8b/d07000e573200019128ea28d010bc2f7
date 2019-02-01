@@ -1,0 +1,47 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+$('#idBtn').click(function(){
+
+$.ajax({
+	type: 'GET',
+	url: './idCheck',
+	data:{
+		"inputId": $('#id').val()
+	},
+	success: function(data){
+		console.log(data.toString())
+		if(data.toString() == 'yes'){
+			$('#idResult').html('아이디사용가능');
+		}else{
+			$('#idResult').html('기존의 아이디가 있습니다');
+		}
+	}
+});
+
+});
+});
+
+</script>
+
+</head>
+<body>
+
+	<form action="${ pageContext.request.contextPath }/member/join" method="post">
+	id : <input type="text" name="id" id="id">
+	<input type="button" value="중복체크" id="idBtn"><span id="idResult"></span> <br>
+	pwd : <input type="password" name="pwd"><br>
+	name : <input type="text" name="name"><br>
+	email : <input type="text" name="email"><br>
+	<input type="submit" value="register">
+	</form>
+
+</body>
+</html>

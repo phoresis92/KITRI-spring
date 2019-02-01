@@ -1,0 +1,5 @@
+package com.kitri.app1.repository;
+
+public class ServiceImpl {
+
+}

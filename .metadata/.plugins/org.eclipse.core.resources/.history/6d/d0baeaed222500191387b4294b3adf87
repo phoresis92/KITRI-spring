@@ -1,0 +1,33 @@
+package com.kitri.test.product;
+
+import java.util.ArrayList;
+
+import javax.annotation.Resource;
+
+import org.apache.ibatis.session.SqlSession;
+
+public class ServiceImpl implements Service {
+	
+	@Resource(name="sqlSession")
+	private SqlSession sqlSession;
+	private Dao dao;
+
+	@Override
+	public void addProd(Product p) {
+		dao = sqlSession.getMapper(Dao.class);
+		dao.insert(p);
+	}
+
+	@Override
+	public ArrayList<Product> getAll() {
+		dao = sqlSession.getMapper(Dao.class);
+		return dao.selectAll();
+	}
+
+	@Override
+	public ArrayList<Product> getByMem(String id) {
+		dao = sqlSession.getMapper(Dao.class);
+		return dao.selectByMem(id);
+	}
+
+}

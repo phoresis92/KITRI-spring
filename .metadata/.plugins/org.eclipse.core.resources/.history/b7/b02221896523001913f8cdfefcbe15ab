@@ -1,0 +1,31 @@
+package com.kitri.app1.modelAttribute;
+
+public class CategoryType {
+
+	private String main;
+	private String subtitle;
+	
+	public CategoryType() {
+		super();
+	}
+	public CategoryType(String main, String subtitle) {
+		super();
+		this.main = main;
+		this.subtitle = subtitle;
+	}
+	public String getMain() {
+		return main;
+	}
+	public void setMain(String main) {
+		this.main = main;
+	}
+	public String getSubtitle() {
+		return subtitle;
+	}
+	public void setSubtitle(String subtitle) {
+		this.subtitle = subtitle;
+	}
+	
+	
+	
+}

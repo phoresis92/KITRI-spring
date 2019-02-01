@@ -1,0 +1,51 @@
+package com.kitri.app1.imgboard;
+
+import java.util.ArrayList;
+
+import javax.annotation.Resource;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Component;
+
+@Component("imgBoardService")
+public class ServiceImpl implements Service {
+
+	@Resource(name="sqlSession")
+	private SqlSession sqlSession;
+	private Dao dao;
+	
+	public void setSqlSession(SqlSession sqlSession) {
+		this.sqlSession = sqlSession;
+	}
+
+	@Override
+	public void addImg(ImgBoard ib) {
+		dao=sqlSession.getMapper(Dao.class);
+		dao.insert(ib);
+	}
+
+	@Override
+	public ArrayList<ImgBoard> getAll() {
+		dao=sqlSession.getMapper(Dao.class);
+		return dao.selectAll();
+	}
+
+	@Override
+	public ImgBoard getByNum(int num) {
+		dao=sqlSession.getMapper(Dao.class);
+		return dao.selectByNum(num);
+	}
+
+	@Override
+	public void editImgBoard(ImgBoard ib) {
+		dao=sqlSession.getMapper(Dao.class);
+		dao.update(ib);
+	}
+
+	@Override
+	public void delImgBoard(int num) {
+		dao=sqlSession.getMapper(Dao.class);
+		dao.delete(num);
+	}
+
+}

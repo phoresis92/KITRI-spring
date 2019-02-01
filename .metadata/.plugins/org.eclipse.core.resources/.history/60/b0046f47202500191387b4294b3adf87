@@ -1,0 +1,12 @@
+package com.kitri.test.product;
+
+import java.util.ArrayList;
+
+public interface Dao {
+
+	public void insert(Product p);
+	public ArrayList<Product> getAll();
+	public ArrayList<Product> getByMem(String id);
+	public ArrayList<Product> getByNum(int num);
+	
+}
