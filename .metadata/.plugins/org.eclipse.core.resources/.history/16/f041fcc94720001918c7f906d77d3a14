@@ -1,6 +1,0 @@
-package com.kitri.app1.member;
-
-public class Snippet {
-	Member m
-}
-
