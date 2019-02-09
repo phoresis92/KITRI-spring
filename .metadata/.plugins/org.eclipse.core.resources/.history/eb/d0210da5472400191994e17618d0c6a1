@@ -1,5 +1,0 @@
-package com.kitri.app1.img_rep;
-
-public interface Service {
-
-}

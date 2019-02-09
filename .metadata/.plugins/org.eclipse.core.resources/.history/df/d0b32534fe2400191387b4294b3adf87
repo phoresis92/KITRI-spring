@@ -1,9 +1,0 @@
-package com.kitri.test.member;
-
-public class Snippet {
-	function login(){
-		location.href="./login";
-	}
-	
-}
-
